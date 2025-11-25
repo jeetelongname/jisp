@@ -3,7 +3,7 @@
 
 (comment
   (clerk/serve! {:browse? true
-                 :watch-paths ["src" "notebooks" "resources"]
+                 :watch-paths ["src" "notebooks" "lisp"]
                  :port 7776})
 
   (clerk/show! "src/core.clj")

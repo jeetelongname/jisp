@@ -1,4 +1,4 @@
-{:paths ["src" "notebooks" "dev" "resources"]
+{:paths ["src" "notebooks" "dev" "lisp"]
  :deps {org.clojure/clojure {:mvn/version "1.12.3"}
         org.clojure/core.match {:mvn/version "1.1.0"}
         io.github.nextjournal/clerk {:git/sha "1b8f844e29a06ab1ff82bb95e4310c0c94b8ebdb"}}}
