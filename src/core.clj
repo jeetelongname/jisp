@@ -63,9 +63,10 @@
       parse))
 
 ^::clerk/no-cache
-(read (slurp "resources/function.lisp"))
+(read (slurp "lisp/function.lisp"))
 
 ;; # Evaluating
+(declare evaluate)
 
 (def stdenv {:+ +
              :- -
@@ -84,18 +85,18 @@
 ;;
 ;; It also means if we ever call an unbound name it will return nil
 ;; but as we do not have the concept of errors thats probably fine.
-(defn function-eval [env func arguments]
+(defn evaluate-function [env func arguments]
   (if (proc? func)
     (let [[_ arglist body] func]
       (merge
-       (eval (merge env (zipmap arglist arguments)) body)
+       (evaluate (merge env (zipmap arglist arguments)) body)
        {:env env}))
     {:env env :val (apply func arguments)}))
 
-(defn if-eval [env condition true-body false-body]
-  (eval env (if (:val (eval env condition))
-              true-body
-              false-body)))
+(defn evaluate-if [env condition true-body false-body]
+  (evaluate env (if (:val (evaluate env condition))
+                  true-body
+                  false-body)))
 
 ;; we transform the let into a function as I am pulling heavily
 ;; from scheme syntax and semantics. what this entails is
@@ -107,7 +108,7 @@
     [[:lambda arg-names body]
      arg-values]))
 
-(defn eval [env expr]
+(defn evaluate [env expr]
   (match expr
     ;; if the expr is a keyword we get the corresponding value
     (sym :guard #(keyword? %)) {:env env :val (get env sym)}
@@ -122,38 +123,38 @@
     ;; if we run into a begin form we run all the forms inside it
     [:begin & forms]
     (reduce (fn [{env :env _ :val} form]
-              (eval env form))
+              (evaluate env form))
             {:env env :val nil} forms)
 
     ;; if we run into an... if we conditionally evaluate a body
     [:if condition true-body false-body]
-    (if-eval env
-             condition
-             true-body
-             false-body)
+    (evaluate-if env
+                 condition
+                 true-body
+                 false-body)
 
     ;; if we run into a let body
     ;; we transform the let binding into a lambda and run that
 
     [:let bindings body]
     (let [[fn-body argument-list] (transform-let bindings body)]
-      (function-eval env fn-body (mapv (comp :val (partial eval env))
-                                       argument-list)))
+      (evaluate-function env fn-body (mapv (comp :val (partial evaluate env))
+                                           argument-list)))
 
     ;; if we run into a (:key & argument) form we treat this as a function call
     ;; we get the fn from the environment
     ;; we evaluate all the arguments and extract the values
     ;; (no function arguments should modify the environment...)
     [(func :guard #(keyword? %)) & arguments]
-    (function-eval env
-                   (get env func)
-                   (mapv (comp :val (partial eval env))
-                         arguments))
+    (evaluate-function env
+                       (get env func)
+                       (mapv (comp :val (partial evaluate env))
+                             arguments))
     ;; if this somehow passes all of our forms we just :noop for the time being
     :else :noop))
 
 ;; Running 
-(def run (comp (partial eval stdenv) read))
+(def run (comp (partial evaluate stdenv) read))
 
 (run (slurp "lisp/function.lisp"))
 
