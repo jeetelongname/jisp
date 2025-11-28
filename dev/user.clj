@@ -3,15 +3,16 @@
 
 (def default-port 7777)
 
-(defn serve! [{port :port}]
-  (clerk/serve! {:browse? true
-                 :watch-paths ["src" "notebooks" "lisp"]
-                 :port port}))
+(def serve!ops {:browse? true
+                :watch-paths ["src" "notebooks" "lisp"]
+                :port 7776})
+
+(defn serve! [ops]
+  (println "Ran")
+  (clerk/serve! (merge serve!ops ops)))
 
 (comment
-  (clerk/serve! {:browse? true
-                 :watch-paths ["src" "notebooks" "lisp"]
-                 :port 7776})
+  (clerk/serve! serve!ops)
 
   (clerk/show! "src/core.clj")
   (clerk/recompute!)
