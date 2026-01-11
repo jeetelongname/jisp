@@ -4,5 +4,8 @@
         io.github.nextjournal/clerk {:git/sha "1b8f844e29a06ab1ff82bb95e4310c0c94b8ebdb"}}
  :aliases
  {:clerk/serve {:exec-fn dev.user/serve!
-                :exec-args {:port dev.user/default-port}}}}
-
+                :exec-args {:port dev.user/default-port}}
+  :build {:deps {io.github.clojure/tools.build {:git/tag "v0.10.12"
+                                                :git/sha "97c5562"}
+                 slipset/deps-deploy {:mvn/version "0.2.2"}}
+          :ns-default build}}}

@@ -1,6 +1,6 @@
 # A small lisp written in a literate notebook
 
-This is a toy lisp and a teaching tool I have been meaning to develop for years
+This is a toy lisp (scheme inspired) and a teaching tool I have been meaning to develop for years
 now. It is written in under 200 lines of clojure code (including comments!) and
 has support for:
 - [x] function and value definitions
@@ -11,9 +11,21 @@ has support for:
 - [ ] recursive let syntax
 - [ ] macros
 
-The entire code is written in a functional style that clojure mandates 
-and heavily uses pattern matching provided by
-[core.match](https://github.com/clojure/core.match). 
+The entire code is written in a functional style that clojure mandates and
+heavily uses pattern matching provided by
+[core.match](https://github.com/clojure/core.match).
+
+Much of the heavy lifting is done by [clojures edn
+reader](https://clojure.github.io/clojure/clojure.edn-api.html "clojure.edn api
+documentation"). The hardest part, implementing a function from string to data
+structure, is completed for us. This does add the limitation that there can only
+be one top level form. Hence the use of begin at the top level but for a toy
+lisp thats not actually that much of an issue.
+
+I would like to thank Peter Norvig and his excellent [article on the
+matter](https://norvig.com/lispy.html "(How to Write a (Lisp) Interpreter (in
+Python))"). This worked as an inspiration for me even though I did not use
+python in the end.
 
 # Running
 ## Clerk
